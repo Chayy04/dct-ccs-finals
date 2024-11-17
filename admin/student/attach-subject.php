@@ -53,11 +53,11 @@ include '../partials/side-bar.php';
                                 <td><?php echo htmlspecialchars($student['first_name']); ?></td>
                                 <td><?php echo htmlspecialchars($student['last_name']); ?></td>
                                 <td>
-                                    <!-- Edit Button -->
+                                    <!-- dettach-subject Button -->
                                     <a href="dettach-subject.php?index=<?php echo $index; ?>" class="btn btn-danger btn-sm">Dettach Subject</a>
 
-                                    <!-- Delete Button -->
-                                    <a href="delete.php?index=<?php echo $index; ?>" class="btn btn-success btn-sm">Assign Grade</a>
+                                    <!-- ssign-grade Button -->
+                                    <a href="assign-grade.php?index=<?php echo $index; ?>" class="btn btn-success btn-sm">Assign Grade</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
