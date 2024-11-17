@@ -9,6 +9,26 @@ if (!isset($_SESSION['user'])) {
 
 include '../partials/header.php'; // Include header here
 include '../partials/side-bar.php';
+
+
+$errors = [];
+$student_data = [];
+    // Initialize the student data array if it doesn't exist
+    if (!isset($_SESSION['student_data'])) {
+        $_SESSION['student_data'] = [];
+    }
+
+    // Process the form submission for registering a student
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Get student data from the form
+        $student_data = [
+            'student_id' => $_POST['student_id'],
+            'first_name' => $_POST['first_name'],
+            'last_name' => $_POST['last_name']
+        ];
+
+    $_SESSION['student_data'][] = $student_data; 
+    }
 ?>
 
 <!-- Template Files here -->
@@ -34,6 +54,39 @@ include '../partials/side-bar.php';
 
             <button type="submit" class="btn btn-primary w-100">Add Student</button>
         </form>
+
+            <!-- List of Registered Students with Gray Border -->             
+            <div class="border border-secondary-1 p-5">
+                <h5>Student List</h5>
+                <hr>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($_SESSION['student_data'] as $index => $student): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($student['student_id']); ?></td>
+                                <td><?php echo htmlspecialchars($student['first_name']); ?></td>
+                                <td><?php echo htmlspecialchars($student['last_name']); ?></td>
+                                <td>
+                                    <!-- Edit Button -->
+                                    <a href="edit.php?index=<?php echo $index; ?>" class="btn btn-info btn-sm">Edit</a>
+
+                                    <!-- Delete Button -->
+                                    <a href="delete.php?index=<?php echo $index; ?>" class="btn btn-danger btn-sm">Delete</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
     </div>    
 </main>
 
