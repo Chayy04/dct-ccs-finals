@@ -54,7 +54,7 @@ include '../partials/side-bar.php';
                                 <td><?php echo htmlspecialchars($student['last_name']); ?></td>
                                 <td>
                                     <!-- Edit Button -->
-                                    <a href="edit.php?index=<?php echo $index; ?>" class="btn btn-danger btn-sm">Dettach Subject</a>
+                                    <a href="dettach-subject.php?index=<?php echo $index; ?>" class="btn btn-danger btn-sm">Dettach Subject</a>
 
                                     <!-- Delete Button -->
                                     <a href="delete.php?index=<?php echo $index; ?>" class="btn btn-success btn-sm">Assign Grade</a>
