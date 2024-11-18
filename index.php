@@ -52,9 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <!-- Server-Side Validation Messages should be placed here -->
                 <?php 
                 if (!empty($errors)) {
-                    echo "<div class='alert alert-danger'>";
+                   // echo "<div class='alert alert-danger'>";
                     echo displayErrors($errors);
-                    echo "</div>";
+
                 }
                 ?>
  

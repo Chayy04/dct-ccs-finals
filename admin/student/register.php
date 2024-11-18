@@ -13,7 +13,7 @@ include '../partials/side-bar.php';
 include '../../functions.php'; // Include your database connection function
 
 $errors = [];
-$student_data = [];
+//$student_data = [];
 $conn = dbConnect(); // Connect to the database
 
 
@@ -25,32 +25,36 @@ $conn = dbConnect(); // Connect to the database
     // Process the form submission for registering a student
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Get student data from the form
-    
-        $student_id = $_POST['student_id'];
-        $first_name = $_POST['first_name'];
-        $last_name = $_POST['last_name'];
+    $student_data = [
+        'student_id' => $_POST['student_id'],
+        'first_name' => $_POST['first_name'],
+        'last_name' => $_POST['last_name']
+    ];
 
-    // Validate input
-    if (empty($student_id) || empty($first_name) || empty($last_name)) {
-        $errors[] = 'All fields are required.';
-    } 
-        else {
-            // Insert data into the database
-            $stmt = $conn->prepare("INSERT INTO students (student_id, first_name, last_name) VALUES (?, ?, ?)");
-            $stmt->bind_param("iss", $student_id, $first_name, $last_name);
+    //Validate input data
+    $errors = validateStudentData($student_data);
 
-            if ($stmt->execute()) {
-                // Clear output buffer before redirecting
-                ob_end_clean(); 
-            
-                // Redirect to the same page to show the updated student list
-                header("Location: register.php");
-                exit();
-            } else {
-                $errors[] = 'Failed to add student. Please try again.';
-            }
-            $stmt->close();
+    //Check for duplicate student ID in the database
+    if (empty($errors)) {
+        $errors = checkDuplicateStudentData($student_data['student_id'], $conn);
+    }
+
+    // no errors, insert data into the database
+    if (empty($errors)) {
+        $stmt = $conn->prepare("INSERT INTO students (student_id, first_name, last_name) VALUES (?, ?, ?)");
+        $stmt->bind_param("iss", $student_data['student_id'], $student_data['first_name'], $student_data['last_name']);
+        
+        if ($stmt->execute()) {
+            // Clear output buffer before redirecting
+            ob_end_clean();
+            header("Location: register.php");
+            exit();
+        } else {
+            $errors[] = 'Failed to add student. Please try again.';
         }
+        $stmt->close();
+    }
+
     }
     // Fetch all students from the database
     $students = [];
@@ -74,9 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php 
         // Display errors if any
         if (!empty($errors)) {
-            echo "<div class='alert alert-danger'>";
             echo displayErrors($errors);
-            echo "</div>";
         }
         ?>
    
@@ -84,19 +86,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     <div class="row mt-5">
         <form method="POST" action="" class="border border-secondary-1 p-5 mb-4">
-            <div class="mb-3">
-                <label for="student_id" class="form-label">Student ID</label>
-                <input type="number" class="form-control" id="student_id" name="student_id" placeholder="Enter Student ID" required>
+
+            <!-- Floating Label for Student ID -->
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="student_id" name="student_id" 
+                       placeholder="Student ID" value="" >
+                <label for="student_id">Student ID</label>
             </div>
 
-            <div class="mb-3">
-                <label for="first_name" class="form-label">First Name</label>
-                <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter First Name" required>
+            <!-- Floating Label for First Name -->
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="first_name" name="first_name" 
+                       placeholder="First Name" value="" >
+                <label for="first_name">First Name</label>
             </div>
 
-            <div class="mb-3">
-                <label for="last_name" class="form-label">Last Name</label>
-                <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter Last Name" required>
+            <!-- Floating Label for Last Name -->
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="last_name" name="last_name" 
+                       placeholder="Last Name" value="" >
+                <label for="last_name">Last Name</label>
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Add Student</button>

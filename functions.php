@@ -42,12 +42,51 @@ function checkLoginCredentials($email, $password, $users) {
 }
 
 function displayErrors($errors) {
-    $output = "<ul class='mb-0'>";
-    foreach ($errors as $error) {
-        $output .= "<li>" . htmlspecialchars($error) . "</li>";
-    }
+    $output = '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
+    $output .= '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+    $output .= '<strong>System Errors</strong>';
+    $output .= '<ul>';
+        foreach ($errors as $error) {
+            $output .= "<li>" . htmlspecialchars($error) . "</li>";
+        }
     $output .= "</ul>";
+    $output .= '</div>';
     return $output;
 }
+
+// student
+function validateStudentData($student_data) {
+    $errors = [];
+    
+    // Validate Student ID
+    if (empty($student_data['student_id'])) {
+        $errors[] = "Student ID is required.";
+    }
+    
+    // Validate First Name
+    if (empty($student_data['first_name'])) {
+        $errors[] = "First Name is required.";
+    }
+    
+    // Validate Last Name
+    if (empty($student_data['last_name'])) {
+        $errors[] = "Last Name is required.";
+    }
+    
+    return $errors;
+}
+
+function checkDuplicateStudentData($student_id, $conn) {
+    $stmt = $conn->prepare("SELECT student_id FROM students WHERE student_id = ?");
+    $stmt->bind_param("i", $student_id);
+    $stmt->execute();
+    $stmt->store_result();
+    
+    $isDuplicate = $stmt->num_rows > 0;
+    $stmt->close();
+    
+    return $isDuplicate ? ["Duplicate Student ID."] : [];
+}
+
 
 ?>
