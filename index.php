@@ -11,26 +11,37 @@
 session_start();
 include 'functions.php';
 
+$errors = [];
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Updated to match the form field names
+    // Collect and sanitize input
     $email = $_POST['email'];
-    $password = md5($_POST['password']); // MD5 hashing
+    $password = $_POST['password'];
 
-    $conn = dbConnect();
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND password = ?");
-    $stmt->bind_param("ss", $email, $password);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    // Validate input using your custom function
+    $errors = validateLoginCredentials($email, $password);
 
-    if ($result->num_rows > 0) {
-        $_SESSION['user'] = $email; // Store session data
-        header("Location: admin/dashboard.php");
-        exit();
-    } else {
-        $error = "Invalid email or password!";
+    // If no validation errors, proceed to check credentials
+    if (empty($errors)) {
+        $hashedPassword = md5($password); // MD5 hashing
+
+        // Connect to the database and check credentials
+        $conn = dbConnect();
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND password = ?");
+        $stmt->bind_param("ss", $email, $hashedPassword);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $_SESSION['user'] = $email; // Store session data
+            header("Location: admin/dashboard.php");
+            exit();
+        } else {
+            $errors[] = "Invalid email or password!";
+        }
+        $stmt->close();
+        $conn->close();
     }
-    $stmt->close();
-    $conn->close();
 }
 ?>
 
@@ -39,6 +50,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="d-flex align-items-center justify-content-center vh-100">
         <div class="col-3">
             <!-- Server-Side Validation Messages should be placed here -->
+                <?php 
+                if (!empty($errors)) {
+                    echo "<div class='alert alert-danger'>";
+                    echo displayErrors($errors);
+                    echo "</div>";
+                }
+                ?>
+ 
             <div class="card">
                 <div class="card-body">
                     <h1 class="h3 mb-4 fw-normal">Login</h1>
@@ -55,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <button type="submit" name="login" class="btn btn-primary w-100">Login</button>
                         </div>
                     </form>
-                    <?php if (isset($error)) echo "<p>$error</p>"; ?>
+                    <!-- <?php// if (isset($error)) echo "<p>$error</p>"; ?> -->
                 </div>
             </div>
         </div>
