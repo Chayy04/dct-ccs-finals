@@ -1,5 +1,6 @@
 <?php
 session_start();
+ob_start();
 
 // Check if the user is logged in
 if (!isset($_SESSION['user'])) {
@@ -9,30 +10,76 @@ if (!isset($_SESSION['user'])) {
 
 include '../partials/header.php'; // Include header here
 include '../partials/side-bar.php';
-
+include '../../functions.php'; // Include your database connection function
 
 $errors = [];
 $student_data = [];
+$conn = dbConnect(); // Connect to the database
+
+
     // Initialize the student data array if it doesn't exist
     if (!isset($_SESSION['student_data'])) {
         $_SESSION['student_data'] = [];
     }
 
     // Process the form submission for registering a student
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        // Get student data from the form
-        $student_data = [
-            'student_id' => $_POST['student_id'],
-            'first_name' => $_POST['first_name'],
-            'last_name' => $_POST['last_name']
-        ];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Get student data from the form
+    
+        $student_id = $_POST['student_id'];
+        $first_name = $_POST['first_name'];
+        $last_name = $_POST['last_name'];
 
-    $_SESSION['student_data'][] = $student_data; 
+    // Validate input
+    if (empty($student_id) || empty($first_name) || empty($last_name)) {
+        $errors[] = 'All fields are required.';
+    } 
+        else {
+            // Insert data into the database
+            $stmt = $conn->prepare("INSERT INTO students (student_id, first_name, last_name) VALUES (?, ?, ?)");
+            $stmt->bind_param("iss", $student_id, $first_name, $last_name);
+
+            if ($stmt->execute()) {
+                // Clear output buffer before redirecting
+                ob_end_clean(); 
+            
+                // Redirect to the same page to show the updated student list
+                header("Location: register.php");
+                exit();
+            } else {
+                $errors[] = 'Failed to add student. Please try again.';
+            }
+            $stmt->close();
+        }
     }
+    // Fetch all students from the database
+    $students = [];
+    $result = $conn->query("SELECT * FROM students");
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $students[] = $row;
+        }
+    }
+
+    // Store the fetched students in the session so they are available on page reload
+    $_SESSION['student_data'] = $students;
+
+    $conn->close();
+
+
 ?>
 
 <!-- Template Files here -->
-<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">    
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5"> 
+        <?php 
+        // Display errors if any
+        if (!empty($errors)) {
+            echo "<div class='alert alert-danger'>";
+            echo displayErrors($errors);
+            echo "</div>";
+        }
+        ?>
+   
     <h1 class="h2">Register a New Student</h1>        
     
     <div class="row mt-5">
@@ -69,25 +116,31 @@ $student_data = [];
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($_SESSION['student_data'] as $index => $student): ?>
+                        <?php if (!empty($_SESSION['student_data']) && is_array($_SESSION['student_data'])): ?>
+                            <?php foreach ($_SESSION['student_data'] as $index => $student): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($student['student_id']); ?></td>
+                                    <td><?php echo htmlspecialchars($student['first_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($student['last_name']); ?></td>
+                                    <td>
+                                        <!-- Edit Button -->
+                                        <a href="edit.php?index=<?php echo $index; ?>" class="btn btn-info btn-sm">Edit</a>
+
+                                        <!-- Delete Button -->
+                                        <a href="delete.php?index=<?php echo $index; ?>" class="btn btn-danger btn-sm">Delete</a>
+
+                                        <!-- Attach Subject -->
+                                        <a href="attach-subject.php?index=<?php echo $index; ?>" class="btn btn-warning btn-sm">Attach Subject</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($student['student_id']); ?></td>
-                                <td><?php echo htmlspecialchars($student['first_name']); ?></td>
-                                <td><?php echo htmlspecialchars($student['last_name']); ?></td>
-                                <td>
-                                    <!-- Edit Button -->
-                                    <a href="edit.php?index=<?php echo $index; ?>" class="btn btn-info btn-sm">Edit</a>
-
-                                    <!-- Delete Button -->
-                                    <a href="delete.php?index=<?php echo $index; ?>" class="btn btn-danger btn-sm">Delete</a>
-                                
-                                    <!-- Attach Subject -->
-                                    <a href="attach-subject.php?index=<?php echo $index; ?>" class="btn btn-warning btn-sm">Attach Subject</a>
-
-                                </td>
+                                <td colspan="4" class="text-center">No students found.</td>
                             </tr>
-                        <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
+
                 </table>
             </div>
 
@@ -96,4 +149,5 @@ $student_data = [];
 
 <?php
 include '../partials/footer.php'; // Include footer here
+ob_end_flush(); // Flush the output buffer and send output
 ?>
