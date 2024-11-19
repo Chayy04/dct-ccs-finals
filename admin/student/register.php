@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         <a href="edit.php?student_id=<?php echo $student['student_id']; ?>" class="btn btn-info btn-sm">Edit</a>
 
                                         <!-- Delete Button -->
-                                        <a href="delete.php?index=<?php echo $index; ?>" class="btn btn-danger btn-sm">Delete</a>
+                                        <a href="delete.php?student_id=<?php echo $student['student_id']; ?>" class="btn btn-danger btn-sm">Delete</a>
 
                                         <!-- Attach Subject -->
                                         <a href="attach-subject.php?index=<?php echo $index; ?>" class="btn btn-warning btn-sm">Attach Subject</a>
