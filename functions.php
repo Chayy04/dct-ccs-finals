@@ -103,5 +103,46 @@ function getSelectedStudentData($index) {
     return isset($_SESSION['students'][$index]) ? $_SESSION['students'][$index] : null;
 }
 
+//sybject
+function validateSubjectData($subject_data) {
+    $arrErrors = [];
+
+    if (empty($subject_data['subject_code'])) {
+        $arrErrors[] = "Subject code is required.";
+    }
+
+    if (empty($subject_data['subject_name'])) {
+        $arrErrors[] = "Subject name is required.";
+    }
+
+    return $arrErrors;
+}
+
+function checkDuplicateSubjectData($subject_data) {
+    $arrErrors = [];
+
+    foreach ($_SESSION['subjects'] as $subject) {
+        if ($subject['subject_code'] === $subject_data['subject_code'] || $subject['subject_name'] === $subject_data['subject_name']) {
+            $arrErrors[] = "Duplicate Subject";
+            break;
+        }
+    }
+
+    return $arrErrors;
+}
+
+function getSelectedSubjectIndex($subject_code) {
+    foreach ($_SESSION['subjects'] as $index => $subject) {
+        if ($subject['subject_code'] === $subject_code) {
+            return $index;
+        }
+    }
+    return null;  // Return null if subject is not found
+}
+
+function getSelectedSubjectData($index) {
+    return isset($_SESSION['subjects'][$index]) ? $_SESSION['subjects'][$index] : null;
+}   
+
 
 ?>
