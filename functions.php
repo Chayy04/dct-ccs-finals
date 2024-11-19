@@ -88,5 +88,20 @@ function checkDuplicateStudentData($student_id, $conn) {
     return $isDuplicate ? ["Duplicate Student ID."] : [];
 }
 
+function getSelectedStudentIndex($student_id) {
+    if (isset($_SESSION['students'])) {
+        foreach ($_SESSION['students'] as $index => $student) {
+            if ($student['student_id'] === $student_id) {
+                return $index;
+            }
+        }
+    }
+    return null;  // Return null if student is not found
+}
+
+function getSelectedStudentData($index) {
+    return isset($_SESSION['students'][$index]) ? $_SESSION['students'][$index] : null;
+}
+
 
 ?>

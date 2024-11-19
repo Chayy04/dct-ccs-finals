@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <td><?php echo htmlspecialchars($student['last_name']); ?></td>
                                     <td>
                                         <!-- Edit Button -->
-                                        <a href="edit.php?index=<?php echo $index; ?>" class="btn btn-info btn-sm">Edit</a>
+                                        <a href="edit.php?student_id=<?php echo $student['student_id']; ?>" class="btn btn-info btn-sm">Edit</a>
 
                                         <!-- Delete Button -->
                                         <a href="delete.php?index=<?php echo $index; ?>" class="btn btn-danger btn-sm">Delete</a>
