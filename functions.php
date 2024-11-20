@@ -183,5 +183,26 @@ function getSelectedSubjectData($index) {
     return $subject;
 }
 
+function isUserLoggedIn() {
+    return isset($_SESSION['user']);
+}
+
+function redirectIfNotLoggedIn() {
+    if (!isUserLoggedIn()) {
+        header("Location: ../index.php");
+        exit();
+    }
+}
+
+function redirectIfLoggedIn() {
+    if (isUserLoggedIn()) {
+        header("Location: admin/dashboard.php");
+        exit();
+    }
+}
+
+
+
+
 
 ?>

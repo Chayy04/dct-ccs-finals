@@ -2,6 +2,12 @@
 session_start();
 ob_start();
 
+$pathDashboard = "../dashboard.php";
+$pathLogout = "../logout.php";
+$pathSubjects = "add.php";
+$pathStudents = "../student/register.php";
+
+
 // Check if the user is logged in
 if (!isset($_SESSION['user'])) {
     header("Location: ../index.php");
@@ -130,9 +136,18 @@ $conn->close();
     
 
 
-    <h1 class="h2">Add a New Subject</h1>        
+    <h1 class="h2">Add a New Subject</h1>      
+        <div class="mt-5 mb-3 w-100">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="../dashboard.php" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Add Subject</li>
+                </ol>
+            </nav>
+        </div>
     
-    <div class="row mt-5">
+    
+    <div class="row mt-3">
         <form method="POST" action="" class="border border-secondary-1 p-5 mb-4">
             
             <?php 

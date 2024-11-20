@@ -2,6 +2,12 @@
 session_start();
 ob_start();
 
+$pathDashboard = "../dashboard.php";
+$pathLogout = "../logout.php";
+$pathSubjects = "add.php";
+$pathStudents = "../student/register.php";
+
+
 // Check if the user is logged in
 if (!isset($_SESSION['user'])) {
     header("Location: ../index.php");
@@ -50,6 +56,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- Template Files here -->
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">    
     <h1 class="h2">Edit Subject</h1>        
+        <div class="mt-5 mb-3 w-100">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="../dashboard.php" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="add.php" class="text-decoration-none">Add Subject</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit Subject</li>
+                </ol>
+            </nav>
+        </div>
+
     
     <div class="row mt-5">
     <form method="POST" action="" class="border border-secondary-1 p-5 mb-4">

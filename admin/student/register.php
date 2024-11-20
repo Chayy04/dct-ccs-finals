@@ -8,9 +8,14 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-include '../partials/header.php'; // Include header here
+include '../../functions.php'; // Include the functions
+include '../partials/header.php';
+
+$logoutPage = '../logout.php';
+$dashboardPage = '../dashboard.php';
+$studentPage = '../student/register.php';
+$subjectPage = './subject/add.php';
 include '../partials/side-bar.php';
-include '../../functions.php'; // Include your database connection function
 
 $errors = [];
 //$student_data = [];
@@ -75,17 +80,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!-- Template Files here -->
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5"> 
-        <?php 
-        // Display errors if any
-        if (!empty($errors)) {
-            echo displayErrors($errors);
-        }
-        ?>
    
-    <h1 class="h2">Register a New Student</h1>        
+    <h1 class="h2">Register a New Student</h1>     
     
-    <div class="row mt-5">
+    <div class="mt-5 w-100">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="../dashboard.php" class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Register Student</li>
+            </ol>
+        </nav>
+    </div>
+
+    
+    <div class="row mt-3">
         <form method="POST" action="" class="border border-secondary-1 p-5 mb-4">
+            <?php 
+            // Display errors if any
+            if (!empty($errors)) {
+                echo displayErrors($errors);
+            }
+            ?>
 
             <!-- Floating Label for Student ID -->
             <div class="form-floating mb-3">

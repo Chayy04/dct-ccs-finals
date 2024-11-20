@@ -1,15 +1,18 @@
 <?php
 session_start();
 
-// Check if the user is logged in
+// Redirect unauthenticated users to the login page
 if (!isset($_SESSION['user'])) {
     header("Location: ../index.php");
     exit();
 }
 
-include 'partials/header.php'; // Include header here
-include 'partials/side-bar.php'; // Include sidebar here
-
+$logoutPage = 'logout.php';
+$subjectPage = './subject/add.php';
+$studentPage = './student/register.php';
+require './partials/header.php';
+require './partials/side-bar.php';
+require '../functions.php';
 ?>
 
 <!-- Template Files here -->
