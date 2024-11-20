@@ -29,7 +29,7 @@ $subject_name = '';
 
 // If editing, retrieve subject data from session
 if ($is_edit) {
-    $index = $_GET['index'];
+    $index = intval($_GET['index']);
     $subject = getSelectedSubjectData($index);
 
     if ($subject) {
@@ -39,7 +39,6 @@ if ($is_edit) {
         $errors[] = "Subject not found.";
     }
 }
-
 
 // Process the form submission for adding a subject
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
