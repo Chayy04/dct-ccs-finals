@@ -103,6 +103,8 @@ function getSelectedStudentData($index) {
     return isset($_SESSION['students'][$index]) ? $_SESSION['students'][$index] : null;
 }
 
+
+
 //sybject
 function validateSubjectData($subject_data) {
     $arrErrors = [];
@@ -118,31 +120,68 @@ function validateSubjectData($subject_data) {
     return $arrErrors;
 }
 
-function checkDuplicateSubjectData($subject_data) {
-    $arrErrors = [];
+function checkDuplicateSubject($subject_code, $subject_name) {
+    $errors = [];
+    $conn = dbConnect();
+    $stmt = $conn->prepare("SELECT * FROM subjects WHERE subject_name = ? AND subject_code != ?");
+    $stmt->bind_param("si", $subject_name, $subject_code);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    foreach ($_SESSION['subjects'] as $subject) {
-        if ($subject['subject_code'] === $subject_data['subject_code'] || $subject['subject_name'] === $subject_data['subject_name']) {
-            $arrErrors[] = "Duplicate Subject";
-            break;
-        }
+    if ($result->num_rows > 0) {
+        $errors[] = "A subject with the same name already exists.";
     }
 
-    return $arrErrors;
+    $stmt->close();
+    $conn->close();
+    return $errors;
 }
+
+
+
 
 function getSelectedSubjectIndex($subject_code) {
-    foreach ($_SESSION['subjects'] as $index => $subject) {
-        if ($subject['subject_code'] === $subject_code) {
-            return $index;
-        }
-    }
-    return null;  // Return null if subject is not found
+    $conn = dbConnect();
+    $stmt = $conn->prepare("SELECT * FROM subjects WHERE subject_code = ?");
+    $stmt->bind_param("i", $subject_code);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $subject = $result->fetch_assoc();
+    $stmt->close();
+    $conn->close();
+    return $subject;
 }
 
+function updateSubject($subject_code, $subject_name) {
+    $errors = checkDuplicateSubject($subject_code, $subject_name);
+    if (!empty($errors)) {
+        return $errors;
+    }
+
+    $conn = dbConnect();
+    $stmt = $conn->prepare("UPDATE subjects SET subject_name = ? WHERE subject_code = ?");
+    $stmt->bind_param("si", $subject_name, $subject_code);
+    $success = $stmt->execute();
+    $stmt->close();
+    $conn->close();
+
+    return $success ? [] : ["Failed to update subject."];
+}
+
+
+
+
 function getSelectedSubjectData($index) {
-    return isset($_SESSION['subjects'][$index]) ? $_SESSION['subjects'][$index] : null;
-}   
+    $conn = dbConnect();
+    $stmt = $conn->prepare("SELECT * FROM subjects LIMIT 1 OFFSET ?");
+    $stmt->bind_param("i", $index);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $subject = $result->fetch_assoc();
+    $stmt->close();
+    $conn->close();
+    return $subject;
+}
 
 
 ?>

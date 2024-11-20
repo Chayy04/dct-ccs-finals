@@ -21,6 +21,26 @@ if (!isset($_SESSION['subjects'])) {
     $_SESSION['subjects'] = [];
 }
 
+// Check if editing an existing subject
+$is_edit = isset($_GET['index']);
+$subject = null;
+$subject_code = '';
+$subject_name = '';
+
+// If editing, retrieve subject data from session
+if ($is_edit) {
+    $index = $_GET['index'];
+    $subject = getSelectedSubjectData($index);
+
+    if ($subject) {
+        $subject_code = $subject['subject_code'];
+        $subject_name = $subject['subject_name'];
+    } else {
+        $errors[] = "Subject not found.";
+    }
+}
+
+
 // Process the form submission for adding a subject
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get subject data from the form
@@ -37,23 +57,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors = checkDuplicateSubjectData($subject_data);
     }
 
-    // No errors, insert data into the database and update session
+    // If no errors, update or insert the subject
     if (empty($errors)) {
-        $stmt = $conn->prepare("INSERT INTO subjects (subject_code, subject_name) VALUES (?, ?)");
-        $stmt->bind_param("is", $subject_data['subject_code'], $subject_data['subject_name']);
-
-        if ($stmt->execute()) {
-            // Refresh session data
-            $_SESSION['subjects'][] = $subject_data;
-
-            // Clear output buffer and redirect
-            ob_end_clean();
-            header("Location: add.php");
-            exit();
+        if ($is_edit) {
+            // Update the subject in the database and session
+            $stmt = $conn->prepare("UPDATE subjects SET subject_name = ? WHERE subject_code = ?");
+            $stmt->bind_param("si", $subject_data['subject_name'], $subject_data['subject_code']);
+            if ($stmt->execute()) {
+                $_SESSION['subjects'][$index]['subject_name'] = $subject_data['subject_name'];
+                header("Location: add.php");
+                exit();
+            } else {
+                $errors[] = 'Failed to update subject. Please try again.';
+            }
+            $stmt->close();
         } else {
-            $errors[] = 'Failed to add subject. Please try again.';
+            // Insert new subject into the database and session
+            $stmt = $conn->prepare("INSERT INTO subjects (subject_code, subject_name) VALUES (?, ?)");
+            $stmt->bind_param("is", $subject_data['subject_code'], $subject_data['subject_name']);
+            if ($stmt->execute()) {
+                $_SESSION['subjects'][] = $subject_data;
+                header("Location: add.php");
+                exit();
+            } else {
+                $errors[] = 'Failed to add subject. Please try again.';
+            }
+            $stmt->close();
         }
-        $stmt->close();
     }
 }
 
@@ -72,17 +102,20 @@ $conn->close();
 <!-- Template Files here -->
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">   
     
-    <?php 
-    // Display errors if any
-    if (!empty($errors)) {
-        echo displayErrors($errors);
-    }
-    ?>
+
 
     <h1 class="h2">Add a New Subject</h1>        
     
     <div class="row mt-5">
         <form method="POST" action="" class="border border-secondary-1 p-5 mb-4">
+            
+            <?php 
+            // Display errors if any
+            if (!empty($errors)) {
+                echo displayErrors($errors);
+            }
+            ?>
+
             <!-- Floating Label for Subject Code -->
             <div class="form-floating mb-3">
                 <input type="number" class="form-control bg-light" id="subject_code" name="subject_code" 
@@ -142,4 +175,5 @@ $conn->close();
 
 <?php
 include '../partials/footer.php'; // Include footer here
+ob_end_flush();
 ?>
