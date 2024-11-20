@@ -53,9 +53,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = validateSubjectData($subject_data);
 
     // Check for duplicate subject data using the helper function
-    if (empty($errors)) {
-        $errors = checkDuplicateSubjectData($subject_data);
+    // if (empty($errors)) {
+    //     $errors = checkDuplicateSubject($subject_data['subject_code'], $subject_data['subject_name']);
+    // }
+     // Check for duplicate subject_code in the database
+// Check for duplicate subject_code in the database
+if (empty($errors)) {
+    $stmt = $conn->prepare("SELECT COUNT(*) AS count FROM subjects WHERE subject_code = ?");
+    $stmt->bind_param("s", $subject_data['subject_code']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    if ($row['count'] > 0) {
+        $errors[] = 'Duplicate subject code.';
     }
+    $stmt->close();
+}
+
+// Check for duplicate subject_name in the database
+if (empty($errors)) {
+    $stmt = $conn->prepare("SELECT COUNT(*) AS count FROM subjects WHERE subject_name = ?");
+    $stmt->bind_param("s", $subject_data['subject_name']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    if ($row['count'] > 0) {
+        $errors[] = 'Duplicate subject name.';
+    }
+    $stmt->close();
+}
+
 
     // If no errors, update or insert the subject
     if (empty($errors)) {
