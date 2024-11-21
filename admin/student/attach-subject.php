@@ -147,11 +147,13 @@ $stmt->close();
                             <tr>
                                 <td><?php echo htmlspecialchars($subject['subject_code']); ?></td>
                                 <td><?php echo htmlspecialchars($subject['subject_name']); ?></td>
-                                <td><?php echo htmlspecialchars($subject['grade']); ?></td>
+                                <td><?php echo ($subject['grade'] == 0.00) ? '--.--' : htmlspecialchars($subject['grade']); ?></td>
+
                                 <td>
                                     <!-- Detach Button -->
-                                    <a href="detach-subject.php?id=<?php echo $subject['id']; ?>&student_id=<?php echo $student_id; ?>" 
+                                    <a href="dettach-subject.php?id=<?php echo htmlspecialchars($subject['id']); ?>&student_id=<?php echo htmlspecialchars($student_id); ?>" 
                                         class="btn btn-danger btn-sm">Detach Subject</a>
+
 
                                     <!-- Assign Grade Button -->
                                     <a href="assign-grade.php?id=<?php echo $subject['id']; ?>&student_id=<?php echo $student_id; ?>" 

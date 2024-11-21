@@ -231,6 +231,17 @@ function getAttachedSubjects($student_id) {
     return $subjects;
 }
 
+// Detach a subject from a student
+function detachSubject($attachment_id) {
+    $con = dbConnect();
+    $stmt = $con->prepare("DELETE FROM students_subjects WHERE id = ?");
+    $stmt->bind_param("i", $attachment_id);
+    $stmt->execute();
+    $stmt->close();
+    mysqli_close($con);
+}
+
+
 
 
 
