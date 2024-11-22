@@ -203,6 +203,46 @@ function redirectIfLoggedIn() {
 
 
 
+// Attach a subject to a student
+function attachSubjectToStudent($student_id, $subject_id, $grade = 0.00) {
+    $con = getDatabaseConnection();
+    $stmt = $con->prepare("INSERT INTO students_subjects (student_id, subject_id, grade) VALUES (?, ?, ?)");
+    $stmt->bind_param("iid", $student_id, $subject_id, $grade);
+    $stmt->execute();
+    $stmt->close();
+    mysqli_close($con);
+}
+
+// Get subjects attached to a student
+function getAttachedSubjects($student_id) {
+    $con = getDatabaseConnection();
+    $stmt = $con->prepare("
+        SELECT ss.id, s.subject_code, s.subject_name, ss.grade 
+        FROM students_subjects ss 
+        INNER JOIN subjects s ON ss.subject_id = s.id 
+        WHERE ss.student_id = ?
+    ");
+    $stmt->bind_param("i", $student_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $subjects = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    mysqli_close($con);
+    return $subjects;
+}
+
+// Detach a subject from a student
+function detachSubject($attachment_id) {
+    $con = dbConnect();
+    $stmt = $con->prepare("DELETE FROM students_subjects WHERE id = ?");
+    $stmt->bind_param("i", $attachment_id);
+    $stmt->execute();
+    $stmt->close();
+    mysqli_close($con);
+}
+
+
+
 
 
 ?>
