@@ -1,6 +1,7 @@
 <?php
 session_start();
 ob_start();
+$title = 'Attach Subject to Student';
 
 // Check if the user is logged in
 if (!isset($_SESSION['user'])) {

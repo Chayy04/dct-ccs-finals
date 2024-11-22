@@ -1,6 +1,7 @@
 <?php
 ob_start();
 session_start();
+$title = 'Delete Student';
 
 $pathDashboard = "../dashboard.php";
 $pathLogout = "../logout.php";

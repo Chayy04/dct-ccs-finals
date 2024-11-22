@@ -1,6 +1,7 @@
 <?php
 session_start();
 ob_start();
+$title = 'Register Student';
 
 // Check if the user is logged in
 if (!isset($_SESSION['user'])) {

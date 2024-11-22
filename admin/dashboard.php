@@ -1,5 +1,6 @@
 <?php
 session_start();
+$title = 'Dashboard';
 
 // Redirect unauthenticated users to the login page
 if (!isset($_SESSION['user'])) {

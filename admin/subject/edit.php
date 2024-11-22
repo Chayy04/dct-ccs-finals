@@ -1,6 +1,7 @@
 <?php
 session_start();
 ob_start();
+$title = 'Edit Subject';
 
 $pathDashboard = "../dashboard.php";
 $pathLogout = "../logout.php";

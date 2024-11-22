@@ -1,6 +1,7 @@
 <?php
 session_start();
 ob_start();
+$title = 'Assign Grade to Subject';
 
 // Check if the user is logged in
 if (!isset($_SESSION['user'])) {
