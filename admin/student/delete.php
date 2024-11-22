@@ -82,12 +82,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- Template Files here -->
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">
     <h1 class="h2">Delete Student</h1>
+        <div class="mt-5 mb-3 w-100">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="../dashboard.php" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="register.php" class="text-decoration-none">Register Student</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Delete Student</li>
+                </ol>
+            </nav>
+        </div>
 
     <?php if (!empty($error)): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
         <a href="register.php" class="btn btn-secondary btn-sm">Back to Student List</a>
     <?php elseif ($student): ?>
-        <div class="row mt-5">
+        <div class="row mt-3">
             <form method="POST" action="" class="border border-secondary-1 p-5 mb-4">
                 <div class="mb-2">
                     <label class="form-label fs-5">Are you sure you want to delete this student?</label>
@@ -101,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div>
                         <a href="register.php" class="btn btn-secondary btn-sm">Cancel</a>
                         <input type="hidden" name="student_id" value="<?php echo htmlspecialchars($student['student_id']); ?>">
-                        <button type="submit" class="btn btn-danger btn-sm">Delete Student</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Delete Student</button>
                     </div>
                 </div>
             </form>

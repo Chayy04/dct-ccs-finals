@@ -8,6 +8,12 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
+$pathDashboard = "../dashboard.php";
+$pathLogout = "../logout.php";
+$pathSubjects = "../subject/add.php";
+$pathStudents = "register.php";
+
+
 include '../partials/header.php';
 include '../partials/side-bar.php';
 include '../../functions.php';
@@ -52,9 +58,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- Template for Confirmation -->
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">    
-    <h1 class="h2">Detach Subject</h1>        
-    
-    <div class="row mt-5">
+    <h1 class="h2">Dettach Subject</h1>        
+        <div class="mt-5 mb-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="../dashboard.php" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="register.php" class="text-decoration-none">Register Student</a></li>
+                    <li class="breadcrumb-item"><a href="attach-subject.php?student_id=<?= htmlspecialchars($student_id); ?>" class="text-decoration-none">Attach Subject to Student</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Detach Subject from Student</li>
+                </ol>
+            </nav>
+        </div>
+
+    <div class="row mt-3">
         <form method="POST" action="" class="border border-secondary-1 p-5 mb-4">
             <div class="mb-2">
                 <label class="form-label fs-5">Are you sure you want to detach this subject from this student record?</label> 
