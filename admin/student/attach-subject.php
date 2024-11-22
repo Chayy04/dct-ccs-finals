@@ -56,19 +56,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Fetch attached subjects for the student
 $attached_subjects = [];
-$stmt = $conn->prepare("
-    SELECT ss.id, s.subject_code, s.subject_name, ss.grade 
-    FROM students_subjects ss
-    INNER JOIN subjects s ON ss.subject_id = s.id
-    WHERE ss.student_id = ?
-");
-$stmt->bind_param("i", $student_id);
-$stmt->execute();
-$result = $stmt->get_result();
-while ($row = $result->fetch_assoc()) {
-    $attached_subjects[] = $row;
-}
-$stmt->close();
+    $stmt = $conn->prepare("
+        SELECT ss.id AS students_subject_id, s.id AS subject_id, s.subject_code, s.subject_name, ss.grade 
+        FROM students_subjects ss
+        INNER JOIN subjects s ON ss.subject_id = s.id
+        WHERE ss.student_id = ?
+    ");
+    $stmt->bind_param("i", $student_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $attached_subjects[] = $row;
+    }
+    $stmt->close();
+
+
 
 // Fetch subjects not attached to the student
 $available_subjects = [];
@@ -142,30 +144,23 @@ $stmt->close();
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (count($attached_subjects) > 0): ?>
-                        <?php foreach ($attached_subjects as $subject): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($subject['subject_code']); ?></td>
-                                <td><?php echo htmlspecialchars($subject['subject_name']); ?></td>
-                                <td><?php echo ($subject['grade'] == 0.00) ? '--.--' : htmlspecialchars($subject['grade']); ?></td>
-
-                                <td>
-                                    <!-- Detach Button -->
-                                    <a href="dettach-subject.php?id=<?php echo htmlspecialchars($subject['id']); ?>&student_id=<?php echo htmlspecialchars($student_id); ?>" 
-                                        class="btn btn-danger btn-sm">Detach Subject</a>
-
-
-                                    <!-- Assign Grade Button -->
-                                    <a href="assign-grade.php?id=<?php echo $subject['id']; ?>&student_id=<?php echo $student_id; ?>" 
-                                        class="btn btn-success btn-sm">Assign Grade</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+                    <?php foreach ($attached_subjects as $subject): ?>
                         <tr>
-                            <td colspan="4">No subjects attached to this student.</td>
+                            <td><?php echo htmlspecialchars($subject['subject_code']); ?></td>
+                            <td><?php echo htmlspecialchars($subject['subject_name']); ?></td>
+                            <td><?php echo ($subject['grade'] == 0.00) ? '--.--' : htmlspecialchars($subject['grade']); ?></td>
+                            <td>
+                                <!-- Detach Button -->
+                                <a href="dettach-subject.php?id=<?php echo htmlspecialchars($subject['students_subject_id']); ?>&student_id=<?php echo htmlspecialchars($student_id); ?>" 
+                                    class="btn btn-danger btn-sm">Detach Subject</a>
+
+                                <!-- Assign Grade Button -->
+                                <a href="assign-grade.php?subject_id=<?php echo htmlspecialchars($subject['subject_id']); ?>&student_id=<?php echo htmlspecialchars($student_id); ?>" 
+                                    class="btn btn-success btn-sm">Assign Grade</a>
+                            </td>
                         </tr>
-                    <?php endif; ?>
+                    <?php endforeach; ?>
+
                 </tbody>
             </table>
         </div>

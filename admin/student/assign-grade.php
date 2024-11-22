@@ -9,6 +9,56 @@ if (!isset($_SESSION['user'])) {
 
 include '../partials/header.php'; // Include header here
 include '../partials/side-bar.php';
+include '../../functions.php';
+
+$conn = dbConnect();
+
+    $subject_id = $_GET['subject_id'] ?? null; // Get subject_id from the URL
+    $student_id = $_GET['student_id'] ?? null; // Get student_id from the URL
+
+    if (!$subject_id || !$student_id) {
+        die("Invalid request. Please select a valid student and subject.");
+    }
+
+    // Fetch subject and student information for display
+    $stmt = $conn->prepare("
+        SELECT s.subject_code, s.subject_name, st.first_name, st.last_name 
+        FROM subjects s
+        JOIN students st ON st.student_id = ?
+        WHERE s.id = ?
+    ");
+    $stmt->bind_param("ii", $student_id, $subject_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+
+    if (!$data) {
+        die("Subject or student not found.");
+    }
+
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $grade = $_POST['grade'] ?? null;
+    
+        if ($grade !== null) {
+            $stmt = $conn->prepare("
+                UPDATE students_subjects 
+                SET grade = ? 
+                WHERE student_id = ? AND subject_id = ?
+            ");
+            $stmt->bind_param("dii", $grade, $student_id, $subject_id);
+            $stmt->execute();
+            $stmt->close();
+    
+            header("Location: attach-subject.php?student_id=$student_id");
+            exit();
+        } else {
+            echo "<div class='alert alert-danger'>Please enter a valid grade.</div>";
+        }
+    }
+    
+
 
 ?>
 
