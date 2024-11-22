@@ -10,8 +10,6 @@ $pathLogout = "../logout.php";
 $pathSubjects = "add.php";
 $pathStudents = "../student/register.php";
 
-
-
 include '../partials/header.php'; // Include header
 include '../partials/side-bar.php';
 
@@ -32,10 +30,26 @@ if (isset($_GET['index'])) {
 // Handle deletion
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btnDelete']) && $subject) {
     $conn = dbConnect();
-    $stmt = $conn->prepare("DELETE FROM subjects WHERE subject_code = ?");
-    $stmt->bind_param("i", $subject['subject_code']);
-    
-    if ($stmt->execute()) {
+
+    // Start a transaction to ensure atomic operations
+    $conn->begin_transaction();
+
+    try {
+        // First, delete the student-subject relationship (the records in the students_subjects table)
+        $stmt = $conn->prepare("DELETE FROM students_subjects WHERE subject_id = ?");
+        $stmt->bind_param("i", $subject['id']); // Assuming subject has an 'id' field as primary key
+        $stmt->execute();
+        $stmt->close();
+
+        // Now, delete the subject
+        $stmt = $conn->prepare("DELETE FROM subjects WHERE id = ?");
+        $stmt->bind_param("i", $subject['id']);
+        $stmt->execute();
+        $stmt->close();
+
+        // Commit the transaction
+        $conn->commit();
+
         // Re-fetch all subjects from the database
         $result = $conn->query("SELECT * FROM subjects");
         if ($result->num_rows > 0) {
@@ -48,33 +62,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btnDelete']) && $subj
             $_SESSION['subjects'] = [];
         }
 
-        $stmt->close();
         $conn->close();
         header("Location: add.php?message=SubjectDeleted");
         exit();
-    } else {
+    } catch (Exception $e) {
+        // If any error occurs, rollback the transaction
+        $conn->rollback();
         $errors[] = "Failed to delete the subject. Please try again.";
+        $conn->close();
     }
-
-    $stmt->close();
-    $conn->close();
 }
 ?>
-
 
 <!-- Template -->
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">    
     <h1 class="h2">Delete a Subject</h1>        
-        <div class="mt-5 mb-3 w-100">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="../dashboard.php" class="text-decoration-none">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="add.php" class="text-decoration-none">Add Subject</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Delete Subject</li>
-                </ol>
-            </nav>
-        </div>
-
+    <div class="mt-5 mb-3 w-100">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="../dashboard.php" class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="add.php" class="text-decoration-none">Add Subject</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Delete Subject</li>
+            </ol>
+        </nav>
+    </div>
 
     <div class="row mt-3">
         <?php if (!empty($errors)): ?>
