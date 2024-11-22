@@ -2,12 +2,8 @@
 session_start();
 ob_start();
 $title = 'Attach Subject to Student';
-
-// Check if the user is logged in
-if (!isset($_SESSION['user'])) {
-    header("Location: ../index.php");
-    exit();
-}
+include '../../functions.php';
+guard();
 
 $pathDashboard = "../dashboard.php";
 $pathLogout = "../logout.php";
@@ -17,7 +13,6 @@ $pathStudents = "register.php";
 
 include '../partials/header.php';
 include '../partials/side-bar.php';
-include '../../functions.php';
 
 $conn = dbConnect();
 

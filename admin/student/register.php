@@ -2,25 +2,21 @@
 session_start();
 ob_start();
 $title = 'Register Student';
+include '../../functions.php';
+guard();
 
-// Check if the user is logged in
-if (!isset($_SESSION['user'])) {
-    header("Location: ../index.php");
-    exit();
-}
-
-include '../../functions.php'; // Include the functions
 include '../partials/header.php';
+include '../partials/side-bar.php';
 
 $logoutPage = '../logout.php';
 $dashboardPage = '../dashboard.php';
 $studentPage = '../student/register.php';
 $subjectPage = './subject/add.php';
-include '../partials/side-bar.php';
+
+
 
 $errors = [];
-//$student_data = [];
-$conn = dbConnect(); // Connect to the database
+$conn = dbConnect();
 
 
     // Initialize the student data array if it doesn't exist

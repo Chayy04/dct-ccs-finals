@@ -2,6 +2,8 @@
 session_start();
 ob_start();
 $title = 'Edit Student';
+include '../../functions.php';
+guard();
 
 $pathDashboard = "../dashboard.php";
 $pathLogout = "../logout.php";
@@ -9,15 +11,9 @@ $pathSubjects = "../subject/add.php";
 $pathStudents = "register.php";
 
 
-// Check if the user is logged in
-if (!isset($_SESSION['user'])) {
-    header("Location: ../index.php");
-    exit();
-}
 
 include '../partials/header.php';
 include '../partials/side-bar.php';
-include '../../functions.php'; // Make sure this path is correct
 
 // Connect to the database
 $conn = dbConnect();

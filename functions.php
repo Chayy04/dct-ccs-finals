@@ -242,6 +242,12 @@ function detachSubject($attachment_id) {
 }
 
 
+function guard() {
+    if (!isset($_SESSION['user'])) {
+        header("Location: ../index.php"); // Redirect to login page
+        exit(); // Stop further execution of the page
+    }
+}
 
 
 

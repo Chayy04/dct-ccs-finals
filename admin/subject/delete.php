@@ -2,21 +2,18 @@
 session_start();
 ob_start();
 $title = 'Delete Subject';
+include '../../functions.php';
+guard();
 
 $pathDashboard = "../dashboard.php";
 $pathLogout = "../logout.php";
 $pathSubjects = "add.php";
 $pathStudents = "../student/register.php";
 
-// Check if the user is logged in
-if (!isset($_SESSION['user'])) {
-    header("Location: ../index.php");
-    exit();
-}
+
 
 include '../partials/header.php'; // Include header
 include '../partials/side-bar.php';
-include '../../functions.php'; // Include functions
 
 $errors = [];
 

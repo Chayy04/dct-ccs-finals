@@ -2,6 +2,8 @@
 ob_start();
 session_start();
 $title = 'Delete Student';
+include '../../functions.php';
+guard();
 
 $pathDashboard = "../dashboard.php";
 $pathLogout = "../logout.php";
@@ -10,7 +12,6 @@ $pathStudents = "register.php";
 
 include '../partials/header.php';
 include '../partials/side-bar.php';
-include '../../functions.php';
 
 // Ensure the user is logged in
 if (!isset($_SESSION['user'])) {

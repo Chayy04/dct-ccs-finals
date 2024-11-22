@@ -1,12 +1,8 @@
 <?php
 session_start();
 $title = 'Dashboard';
-
-// Redirect unauthenticated users to the login page
-if (!isset($_SESSION['user'])) {
-    header("Location: ../index.php");
-    exit();
-}
+require '../functions.php';
+guard();
 
 $logoutPage = 'logout.php';
 $subjectPage = './subject/add.php';
@@ -14,7 +10,7 @@ $studentPage = './student/register.php';
 
 require './partials/header.php';
 require './partials/side-bar.php';
-require '../functions.php';
+
 
     $conn = dbConnect();
 
